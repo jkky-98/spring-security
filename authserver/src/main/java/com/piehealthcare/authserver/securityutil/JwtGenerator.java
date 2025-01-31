@@ -1,6 +1,7 @@
 package com.piehealthcare.authserver.securityutil;
 
 import com.piehealthcare.authserver.domain.Member;
+import com.piehealthcare.authserver.domain.RefreshToken;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;

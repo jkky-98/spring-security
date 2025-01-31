@@ -14,7 +14,8 @@ spring:
         format_sql: ${HIBERNATE_FORMAT_SQL:true}
 
 server:
-  port: ${AS_SERVER_PORT:8081}
+  address: 0.0.0.0
+  port: ${AS_SERVER_PORT:9001}
 
 logging:
   level:
@@ -27,4 +28,5 @@ logging:
 
 jwt:
   secret-key: b6b825f5c11d980c01d03be7fff5877f90d2b964dcdab6fe632fb4640bc53cbebe528a360a7608319883253388afa11072e9056ec11fa1f9b65dd39b4323a51c
-  access-expiration: 3600000
+  access-expiration: 3600000  # 1시간 (1시간 = 60 * 60 * 1000ms)
+  refresh-expiration: 1296000000  # 15일 (15일 = 15 * 24 * 60 * 60 * 1000ms)

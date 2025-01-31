@@ -3,9 +3,12 @@ package com.piehealthcare.authserver.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.piehealthcare.authserver.domain.GoogleAccount;
 import com.piehealthcare.authserver.domain.Member;
+import com.piehealthcare.authserver.domain.RefreshToken;
 import com.piehealthcare.authserver.domain.Role;
+import com.piehealthcare.authserver.dto.JwtResponseDto;
 import com.piehealthcare.authserver.repository.GoogleAccountRepository;
 import com.piehealthcare.authserver.repository.MemberRepository;
+import com.piehealthcare.authserver.repository.RefreshTokenRepository;
 import com.piehealthcare.authserver.securityutil.JwtGenerator;
 import com.piehealthcare.authserver.securityutil.JwtUtils;
 import lombok.RequiredArgsConstructor;
@@ -27,16 +30,18 @@ import java.util.UUID;
 public class GoogleAccountService {
 
     private final GoogleAccountRepository googleAccountRepository;
-    private final JwtEncoder jwtEncoder;
     private final MemberRepository memberRepository;
     private final JwtGenerator jwtGenerator;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${jwt.secret-key}")
     private String jwtSecret;
     @Value("${jwt.access-expiration}")
     private Long jwtExpiration;
+    @Value("${jwt.refresh-expiration}")
+    private Long refreshExpiration;
 
-    public String authenticateAndGenerateToken(Map<String, Object> googleProfile) {
+    public JwtResponseDto authenticateAndGenerateToken(Map<String, Object> googleProfile) {
 
         // Google 사용자 정보 추출
         String sub = googleProfile.get("sub").toString();
@@ -67,10 +72,26 @@ public class GoogleAccountService {
 
                     return newMember;
                 });
-        return jwtGenerator.generateAccessToken(
+        String accessToken = jwtGenerator.generateAccessToken(
                 JwtUtils.getKeyFromSecret(jwtSecret), // Key 변환
                 jwtExpiration,
                 member
         );
+
+        String refreshToken = jwtGenerator.generateRefreshToken(
+                JwtUtils.getKeyFromSecret(jwtSecret),
+                refreshExpiration,
+                member
+        );
+
+        RefreshToken newRefreshToken = RefreshToken.of(refreshToken, member);
+
+        refreshTokenRepository.save(newRefreshToken);
+
+        JwtResponseDto jwtResponseDto = new JwtResponseDto();
+        jwtResponseDto.setAccessToken(accessToken);
+        jwtResponseDto.setRefreshToken(refreshToken);
+
+        return jwtResponseDto;
     }
 }

@@ -1,9 +1,12 @@
 package com.piehealthcare.authserver.controller;
 
+import com.piehealthcare.authserver.dto.JwtResponseDto;
+import com.piehealthcare.authserver.dto.ResponseDto;
 import com.piehealthcare.authserver.service.GoogleAccountService;
 import com.piehealthcare.authserver.service.GoogleIdTokenParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +28,14 @@ public class GoogleAuthController {
         String googleIdToken = authorizationHeader.replace("Bearer ", "").trim();
         // 구글 토큰 검증
         Map<String, Object> googleProfile = GoogleIdTokenParser.parseIdToken(googleIdToken);
-        String jwtToken = googleAccountService.authenticateAndGenerateToken(googleProfile);
-        log.info("JWT token : {}", jwtToken);
+        JwtResponseDto jwtResponseDto = googleAccountService.authenticateAndGenerateToken(googleProfile);
 
-        return ResponseEntity.ofNullable(jwtToken);
+        ResponseDto<JwtResponseDto> responseDto = new ResponseDto<>(
+                HttpStatus.OK.value(),
+                "Successfully get token",
+                jwtResponseDto
+        );
+
+        return ResponseEntity.ok(responseDto);
     }
 }

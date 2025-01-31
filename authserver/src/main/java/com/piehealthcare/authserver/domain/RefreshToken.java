@@ -21,10 +21,14 @@ public class RefreshToken extends BaseTimeEntity {
     @NotNull
     private String refreshToken;
 
-    @NotNull
-    private LocalDateTime expiresAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public static RefreshToken of(String refreshToken, Member member) {
+        return RefreshToken.builder()
+                .refreshToken(refreshToken)
+                .member(member)
+                .build();
+    }
 }
