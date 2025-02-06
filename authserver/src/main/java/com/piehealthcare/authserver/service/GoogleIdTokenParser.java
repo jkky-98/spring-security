@@ -10,8 +10,9 @@ import java.util.Collections;
 import java.util.Map;
 
 public class GoogleIdTokenParser {
-
-    private static final String CLIENT_ID = "842949735720-tn0ure1c1hngol0m7mmrj2tifklm6h56.apps.googleusercontent.com";
+// android   "536959628396-9ne6ba1olj4m4dlu3969e4icrni39fqi.apps.googleusercontent.com"
+// localForTest   "842949735720-tn0ure1c1hngol0m7mmrj2tifklm6h56.apps.googleusercontent.com"
+    private static final String CLIENT_ID = "536959628396-9ne6ba1olj4m4dlu3969e4icrni39fqi.apps.googleusercontent.com";
 
     public static Map<String, Object> parseIdToken(String idTokenString) {
         try {

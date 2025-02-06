@@ -107,7 +107,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private void handleRefreshToken(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String expiredAccessToken) throws IOException {
         ContentCachingRequestWrapper cachingRequest = new ContentCachingRequestWrapper(request);
-        String refreshToken = extractRefreshTokenFromBody(cachingRequest);
+        String refreshToken = extractRefreshTokenFromHeader(cachingRequest);
 
         try {
             jwtService.isRefreshTokenValid(expiredAccessToken, refreshToken);
@@ -165,9 +165,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private String extractRefreshTokenFromBody(HttpServletRequest request) throws IOException {
-        // 요청 본문을 JSON으로 파싱하여 "refreshToken" 값을 추출
-        Map<String, Object> body = objectMapper.readValue(request.getInputStream(), Map.class);
-        return body.get("refreshToken") != null ? body.get("refreshToken").toString() : null;
+    private String extractRefreshTokenFromHeader(HttpServletRequest request) {
+        // "X-Refresh-Token" 헤더의 값을 읽어옵니다.
+        String refreshToken = request.getHeader("X-Refresh-Token");
+        return (refreshToken != null && !refreshToken.isEmpty()) ? refreshToken.trim() : null;
     }
 }
